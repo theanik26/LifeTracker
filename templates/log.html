@@ -9,10 +9,58 @@
             <p class="page-subtitle">Answer the 5 daily questions honestly. Measure your commitment.</p>
         </div>
 
+        {% if existing_log %}
+        <!-- LOCKED LOG VIEW -->
+        <div class="glass-card p-3 text-center">
+            <div class="mb-3 text-indigo" style="color: var(--primary-accent); font-size: 28px;">🔒</div>
+            <h5 class="fw-bold mb-2">Daily Reflection Completed</h5>
+            <p class="text-muted max-width-md mx-auto mb-3" style="font-size: 11px; max-width: 380px;">
+                You have already logged your progress for today. Daily reflections are locked to enforce discipline and prevent retrospective modifications.
+            </p>
+            
+            <!-- Daily scorecard list -->
+            <div class="d-flex flex-column gap-2 mb-3 mx-auto" style="max-width: 320px; text-align: left;">
+                <div class="p-2 rounded d-flex justify-content-between align-items-center" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);">
+                    <span class="text-secondary">Studied today</span>
+                    <span class="badge {% if existing_log.q1_val %}badge-completed{% else %}badge-missed{% endif %}" style="font-size: 9px; font-weight:600;">
+                        {% if existing_log.q1_val %}Yes{% else %}No{% endif %}
+                    </span>
+                </div>
+                <div class="p-2 rounded d-flex justify-content-between align-items-center" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);">
+                    <span class="text-secondary">Worked on project</span>
+                    <span class="badge {% if existing_log.q2_val %}badge-completed{% else %}badge-missed{% endif %}" style="font-size: 9px; font-weight:600;">
+                        {% if existing_log.q2_val %}Yes{% else %}No{% endif %}
+                    </span>
+                </div>
+                <div class="p-2 rounded d-flex justify-content-between align-items-center" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);">
+                    <span class="text-secondary">Exercised</span>
+                    <span class="badge {% if existing_log.q3_val %}badge-completed{% else %}badge-missed{% endif %}" style="font-size: 9px; font-weight:600;">
+                        {% if existing_log.q3_val %}Yes{% else %}No{% endif %}
+                    </span>
+                </div>
+                <div class="p-2 rounded d-flex justify-content-between align-items-center" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);">
+                    <span class="text-secondary">Career / Job building</span>
+                    <span class="badge {% if existing_log.q4_val %}badge-completed{% else %}badge-missed{% endif %}" style="font-size: 9px; font-weight:600;">
+                        {% if existing_log.q4_val %}Yes{% else %}No{% endif %}
+                    </span>
+                </div>
+                <div class="p-2 rounded d-flex justify-content-between align-items-center" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);">
+                    <span class="text-secondary">Avoided social media</span>
+                    <span class="badge {% if existing_log.q5_val %}badge-completed{% else %}badge-missed{% endif %}" style="font-size: 9px; font-weight:600;">
+                        {% if existing_log.q5_val %}Yes{% else %}No{% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary-custom d-inline-block px-4 py-2">Return to Dashboard</a>
+            </div>
+        </div>
+        {% else %}
         <!-- Hidden input storing existing log data if present (for JS pre-populating) -->
         <input type="hidden" id="existing-log-data" value="{{ existing_log | tojson | safe if existing_log else '' }}">
 
-        <div class="glass-card p-4 p-md-5 position-relative">
+        <div class="glass-card p-3 position-relative">
             <!-- Wizard Progress bar -->
             <div class="wizard-progress">
                 <div class="wizard-progress-bar" id="wizard-progress-bar"></div>
@@ -134,6 +182,7 @@
 
             </form>
         </div>
+        {% endif %}
 
     </div>
 </div>

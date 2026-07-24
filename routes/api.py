@@ -75,38 +75,26 @@ def submit_log():
     
     # Check if exists
     log = DailyLog.query.filter_by(date=log_date).first()
+    if log:
+        return jsonify({'success': False, 'message': 'A daily log entry already exists for this date! Submissions are locked to keep your ledger honest.'}), 400
     
     try:
-        if log:
-            log.q1_val = q1_val
-            log.q1_note = q1_note
-            log.q2_val = q2_val
-            log.q2_note = q2_note
-            log.q3_val = q3_val
-            log.q3_note = q3_note
-            log.q4_val = q4_val
-            log.q4_note = q4_note
-            log.q5_val = q5_val
-            log.q5_note = q5_note
-            log.score = score
-            log.completed = completed
-        else:
-            log = DailyLog(
-                date=log_date,
-                q1_val=q1_val,
-                q1_note=q1_note,
-                q2_val=q2_val,
-                q2_note=q2_note,
-                q3_val=q3_val,
-                q3_note=q3_note,
-                q4_val=q4_val,
-                q4_note=q4_note,
-                q5_val=q5_val,
-                q5_note=q5_note,
-                score=score,
-                completed=completed
-            )
-            db.session.add(log)
+        log = DailyLog(
+            date=log_date,
+            q1_val=q1_val,
+            q1_note=q1_note,
+            q2_val=q2_val,
+            q2_note=q2_note,
+            q3_val=q3_val,
+            q3_note=q3_note,
+            q4_val=q4_val,
+            q4_note=q4_note,
+            q5_val=q5_val,
+            q5_note=q5_note,
+            score=score,
+            completed=completed
+        )
+        db.session.add(log)
             
         db.session.commit()
         return jsonify({

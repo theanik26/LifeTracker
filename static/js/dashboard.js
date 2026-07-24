@@ -69,12 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
             else if (day.status === 'missed') statusClass = 'cell-missed';
             
             cell.className = `calendar-day-cell ${statusClass}`;
-            
-            // Inner content
-            cell.innerHTML = `
-                <span class="day-lbl">${day.day_num}</span>
-                <span class="score-dot-indicator" style="opacity: ${day.score / 5}"></span>
-            `;
+            cell.setAttribute('title', `${day.date} | Score: ${day.score}/5 | ${day.status.toUpperCase()}`);
             
             // Click Handler
             cell.addEventListener('click', () => {
