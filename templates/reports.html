@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row align-items-center mb-4 d-print-none">
+    <div class="col">
+        <h1 class="page-title">Habit Ledger Reports</h1>
+        <p class="page-subtitle">Inspect monthly metrics, download records, or print official ledgers.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: Report Details -->
+    <div class="col-lg-8">
+        
+        <div class="glass-card p-4 p-md-5 mb-4 report-document position-relative">
+            <!-- Header for printed layouts -->
+            <div class="d-none d-print-block pb-3 mb-4 border-bottom border-secondary">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="m-0 text-dark fw-bold">LifeTrack habits Ledger</h2>
+                        <span class="text-muted" style="font-size:12px;">Official Offline Habit Record Ledger</span>
+                    </div>
+                    <div class="text-end">
+                        <strong class="text-dark">Date Generated:</strong><br>
+                        <span class="text-muted" style="font-size:12px;">{{ report.month_name }} Summary</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <span class="badge bg-indigo-subtle text-indigo mb-2 uppercase" style="font-size:10px; font-weight:600; color:var(--primary-accent); background:rgba(99,102,241,0.15);">Monthly ledger</span>
+                    <h3 class="fw-bold m-0">{{ report.month_name }} Summary</h3>
+                </div>
+                <div class="d-print-none">
+                    <!-- Simple Print Button -->
+                    <button onclick="window.print()" class="btn btn-outline-custom d-flex align-items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 1.258a1.125 1.125 0 0 1-1.107 1.327H7.218a1.125 1.125 0 0 1-1.107-1.327L6.34 18m11.32 0h-11.32m9-9V4.5m0 0-3 3m3-3 3 3M8.25 10.5h8.25" />
+                        </svg>
+                        Print Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- Report stats grids -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-4">
+                    <div class="p-3 rounded" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);">
+                        <span class="text-muted d-block" style="font-size: 11px; text-transform: uppercase;">Consistency score</span>
+                        <strong class="text-white" style="font-size: 18px;">{{ report.consistency_score }}%</strong>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="p-3 rounded" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);">
+                        <span class="text-muted d-block" style="font-size: 11px; text-transform: uppercase;">Average score</span>
+                        <strong class="text-white" style="font-size: 18px;">{{ report.avg_score }}/5.0</strong>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="p-3 rounded" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);">
+                        <span class="text-muted d-block" style="font-size: 11px; text-transform: uppercase;">Days completed</span>
+                        <strong class="text-emerald" style="font-size: 18px; color:var(--color-completed);">{{ report.completed_days }} Days</strong>
+                    </div>
+                </div>
+                
+                <div class="col-6 col-md-4">
+                    <div class="p-3 rounded" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);">
+                        <span class="text-muted d-block" style="font-size: 11px; text-transform: uppercase;">Missed days</span>
+                        <strong class="text-rose" style="font-size: 18px; color:var(--color-missed);">{{ report.missed_days }} Days</strong>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="p-3 rounded" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);">
+                        <span class="text-muted d-block" style="font-size: 11px; text-transform: uppercase;">Best week</span>
+                        <strong class="text-white" style="font-size: 13px;">{{ report.best_week }}</strong>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="p-3 rounded" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);">
+                        <span class="text-muted d-block" style="font-size: 11px; text-transform: uppercase;">Worst week</span>
+                        <strong class="text-white" style="font-size: 13px;">{{ report.worst_week }}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Personalized Insights Recommendations -->
+            <div class="mt-4 pt-4 border-top" style="border-color: rgba(255,255,255,0.06) !important;">
+                <h5 class="fw-bold mb-3">AI-Style Recommendations</h5>
+                <ul class="list-group list-group-flush" style="background: transparent;">
+                    {% for rec in report.recommendations %}
+                        <li class="list-group-item bg-transparent text-secondary border-0 ps-0 pb-2" style="font-size: 14px;">
+                            <span class="text-indigo me-2" style="color:var(--primary-accent);">★</span> {{ rec }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Right Column: Export data controls -->
+    <div class="col-lg-4 d-print-none">
+        
+        <div class="glass-card p-4">
+            <h5 class="mb-3 fw-bold">Data Export & Exports</h5>
+            <p class="text-muted" style="font-size: 13px;">Export your complete habit history to SQLite, Excel worksheets, raw CSV streams, or official PDF summary files.</p>
+            
+            <div class="d-flex flex-column gap-3 mt-4">
+                <a href="{{ url_for('api.export_logs_pdf') }}" class="btn btn-outline-custom w-100 d-flex align-items-center justify-content-between">
+                    <span>Export PDF Summary</span>
+                    <span class="badge bg-secondary">PDF</span>
+                </a>
+                <a href="{{ url_for('api.export_logs_excel') }}" class="btn btn-outline-custom w-100 d-flex align-items-center justify-content-between">
+                    <span>Export Excel Worksheet</span>
+                    <span class="badge bg-secondary">XLSX</span>
+                </a>
+                <a href="{{ url_for('api.export_logs_csv') }}" class="btn btn-outline-custom w-100 d-flex align-items-center justify-content-between">
+                    <span>Export CSV Stream</span>
+                    <span class="badge bg-secondary">CSV</span>
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

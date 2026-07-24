@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row align-items-center mb-3">
+    <div class="col">
+        <h1 class="page-title">Performance Analytics</h1>
+        <p class="page-subtitle">Deep dive statistical analysis of your habits, streaks, and focus metrics.</p>
+    </div>
+</div>
+
+<!-- Empty state if database has no records -->
+<div id="analytics-no-data" class="glass-card p-5 text-center" style="display: none;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" class="text-dark mb-3">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />
+    </svg>
+    <h4 class="fw-bold">No habits logged yet</h4>
+    <p class="text-muted max-width-md mx-auto mb-4" style="font-size:14px; max-width:400px;">Statistics are generated automatically once you begin submitting your logs. Complete today's check-in to light up the metrics.</p>
+    <a href="{{ url_for('main.log_today') }}" class="btn btn-primary-custom">Log Today</a>
+</div>
+
+<!-- Main Charts Container -->
+<div id="analytics-charts-container" style="display: none;">
+    
+    <!-- Top Row: Daily trend line chart -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="glass-card p-3">
+                <h5 class="fw-bold mb-3">Daily Productivity Trend (Last 15 Logs)</h5>
+                <div style="height: 300px; position: relative;">
+                    <canvas id="trend-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Row: Multi-charts grid -->
+    <div class="row g-3">
+        <!-- Task completion rate -->
+        <div class="col-md-6 col-lg-7">
+            <div class="glass-card p-3 h-100">
+                <h5 class="fw-bold mb-3">Task Completion Rate (All Time)</h5>
+                <div style="height: 280px; position: relative;">
+                    <canvas id="task-chart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Day distribution doughnut -->
+        <div class="col-md-6 col-lg-5">
+            <div class="glass-card p-3 h-100">
+                <h5 class="fw-bold mb-3">Day Quality Profile</h5>
+                <div style="height: 280px; position: relative;">
+                    <canvas id="pie-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weekday Average scores -->
+        <div class="col-12">
+            <div class="glass-card p-3">
+                <h5 class="fw-bold mb-3">Average Scores by Weekday</h5>
+                <div style="height: 250px; position: relative;">
+                    <canvas id="weekday-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Chart.js CDN (Secure, standard library) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Analytics Render Script -->
+<script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+{% endblock %}

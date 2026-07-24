@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="page-title">Backup & Data Tools</h1>
+    <p class="page-subtitle">Manage your local SQLite database ledger, export JSON backups, or load dummy demonstration records.</p>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: Backup Operations -->
+    <div class="col-md-6">
+        <div class="glass-card p-4 h-100">
+            <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="text-indigo" style="color:var(--primary-accent);">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+                Backup & Restore
+            </h5>
+            <p class="text-muted" style="font-size: 13px;">Download or restore complete JSON archives of your habits ledger. This guarantees your logs remain portable and fully owned by you.</p>
+
+            <div class="d-flex flex-column gap-3 mt-4">
+                <!-- Export Backup -->
+                <div>
+                    <h6 class="text-white mb-2" style="font-size: 13px; font-weight:600;">Export Backup File</h6>
+                    <a href="{{ url_for('api.export_json') }}" class="btn btn-outline-custom w-100 d-inline-flex align-items-center justify-content-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                        Download Backup (.json)
+                    </a>
+                </div>
+
+                <hr style="border-color: rgba(255,255,255,0.06);">
+
+                <!-- Import Backup -->
+                <div>
+                    <h6 class="text-white mb-2" style="font-size: 13px; font-weight:600;">Import Backup File</h6>
+                    <form id="import-form">
+                        <input type="file" id="backup-file-input" class="form-control form-control-custom mb-2" accept=".json" required>
+                        <button type="submit" class="btn btn-primary-custom w-100 d-inline-flex align-items-center justify-content-center gap-2" id="btn-import">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                            </svg>
+                            Upload Backup (.json)
+                        </button>
+                    </form>
+                </div>
+
+                <hr style="border-color: rgba(255,255,255,0.06);">
+
+                <!-- Create SQLite Copy -->
+                <div>
+                    <h6 class="text-white mb-2" style="font-size: 13px; font-weight:600;">System DB Copy</h6>
+                    <button type="button" class="btn btn-outline-custom w-100" id="btn-sqlite-backup">Copy SQLite Database File</button>
+                    <span class="d-block text-muted mt-1" style="font-size: 11px;">Copies `database.db` directly into the `backups/` folder.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Developer Tools -->
+    <div class="col-md-6">
+        <div class="glass-card p-4 h-100">
+            <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="text-danger">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.67 2.67 0 1 0 21 17.25l-5.83-5.83m-3.75 3.75a3.75 3.75 0 1 1-5.3-5.3m5.3 5.3L5.94 18.06a3.42 3.42 0 0 1-4.82 0 3.42 3.42 0 0 1 0-4.82l2.69-2.69m3.75 3.75L12 9.75M12 9.75l-2.69-2.69m2.69 2.69c.89-.89.89-2.33 0-3.22L9.28 1.15A2.32 2.32 0 0 0 6.06 1.15a2.32 2.32 0 0 0 0 3.22l2.69 2.69" />
+                </svg>
+                Developer Diagnostics
+            </h5>
+            <p class="text-muted" style="font-size: 13px;">Manage demonstration datasets to review app functions. The populate tool adds 30 days of synthetic data to test chart widgets instantly.</p>
+
+            <div class="d-flex flex-column gap-3 mt-4">
+                <!-- Populate Dummy Data -->
+                <div>
+                    <h6 class="text-white mb-2" style="font-size: 13px; font-weight:600;">Load Demonstration Data</h6>
+                    <button type="button" class="btn btn-outline-custom w-100" id="btn-populate-dummy" style="border-color: rgba(99,102,241,0.3); color:#a5b4fc;">Populate 30-Day Logs</button>
+                    <span class="d-block text-muted mt-1" style="font-size: 11px;">Fills the database with pre-configured habits history for demonstration. Wipes current data.</span>
+                </div>
+
+                <hr style="border-color: rgba(255,255,255,0.06);">
+
+                <!-- Reset Database -->
+                <div>
+                    <h6 class="text-danger mb-2" style="font-size: 13px; font-weight:600;">Wipe Data (Hard Reset)</h6>
+                    <button type="button" class="btn btn-outline-custom w-100 text-danger" id="btn-reset-db" style="border-color: rgba(239, 68, 68, 0.3);">Wipe Database Ledger</button>
+                    <span class="d-block text-muted mt-1" style="font-size: 11px;">Clears all habit records from the database file. This action is permanent.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. JSON Import
+    const importForm = document.getElementById('import-form');
+    const importFileInput = document.getElementById('backup-file-input');
+    const btnImport = document.getElementById('btn-import');
+
+    importForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const file = importFileInput.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('backup_file', file);
+
+        btnImport.disabled = true;
+        btnImport.innerText = "Importing...";
+
+        fetch('/api/backup/import-json', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            btnImport.disabled = false;
+            btnImport.innerText = "Upload Backup (.json)";
+            importFileInput.value = '';
+
+            if (data.success) {
+                LifeTrackToast.show(data.message, "success");
+            } else {
+                LifeTrackToast.show(data.message || "Failed to import backup.", "error");
+            }
+        })
+        .catch(err => {
+            btnImport.disabled = false;
+            btnImport.innerText = "Upload Backup (.json)";
+            console.error("Backup import error:", err);
+            LifeTrackToast.show("Network error uploading backup file.", "error");
+        });
+    });
+
+    // 2. Copy SQLite DB Backup
+    const btnSqliteBackup = document.getElementById('btn-sqlite-backup');
+    btnSqliteBackup.addEventListener('click', function() {
+        btnSqliteBackup.disabled = true;
+        
+        fetch('/api/backup/create-sqlite-backup', { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                btnSqliteBackup.disabled = false;
+                if (data.success) {
+                    LifeTrackToast.show(data.message, "success");
+                } else {
+                    LifeTrackToast.show(data.message || "Database copy failed.", "error");
+                }
+            })
+            .catch(err => {
+                btnSqliteBackup.disabled = false;
+                console.error("DB copy error:", err);
+                LifeTrackToast.show("Failed to contact API for database copy.", "error");
+            });
+    });
+
+    // 3. Populate Dummy Data
+    const btnPopulateDummy = document.getElementById('btn-populate-dummy');
+    btnPopulateDummy.addEventListener('click', function() {
+        if (!confirm("Are you sure you want to load dummy logs? This will wipe your current records!")) return;
+        
+        btnPopulateDummy.disabled = true;
+        btnPopulateDummy.innerText = "Loading records...";
+
+        fetch('/api/debug/populate-dummy', { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                btnPopulateDummy.disabled = false;
+                btnPopulateDummy.innerText = "Populate 30-Day Logs";
+                
+                if (data.success) {
+                    LifeTrackToast.show(data.message, "success");
+                    // Redirect to dashboard to see results
+                    setTimeout(() => { window.location.href = '/dashboard'; }, 1000);
+                } else {
+                    LifeTrackToast.show(data.message || "Failed to load demonstration data.", "error");
+                }
+            })
+            .catch(err => {
+                btnPopulateDummy.disabled = false;
+                btnPopulateDummy.innerText = "Populate 30-Day Logs";
+                console.error("Demo load error:", err);
+                LifeTrackToast.show("Failed to contact API to populate demo data.", "error");
+            });
+    });
+
+    // 4. Wipe Database Ledger
+    const btnResetDb = document.getElementById('btn-reset-db');
+    btnResetDb.addEventListener('click', function() {
+        if (!confirm("CRITICAL WARNING: This action is permanent and will delete ALL recorded logs in your database! Are you sure?")) return;
+        
+        btnResetDb.disabled = true;
+        btnResetDb.innerText = "Wiping database...";
+
+        fetch('/api/debug/reset-database', { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                btnResetDb.disabled = false;
+                btnResetDb.innerText = "Wipe Database Ledger";
+                
+                if (data.success) {
+                    LifeTrackToast.show(data.message, "success");
+                } else {
+                    LifeTrackToast.show(data.message || "Database reset failed.", "error");
+                }
+            })
+            .catch(err => {
+                btnResetDb.disabled = false;
+                btnResetDb.innerText = "Wipe Database Ledger";
+                console.error("Wipe database error:", err);
+                LifeTrackToast.show("Failed to contact API for database reset.", "error");
+            });
+    });
+});
+</script>
+{% endblock %}

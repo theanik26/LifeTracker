@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-7">
+        
+        <div class="mb-4">
+            <h1 class="page-title">Daily Reflection</h1>
+            <p class="page-subtitle">Answer the 5 daily questions honestly. Measure your commitment.</p>
+        </div>
+
+        <!-- Hidden input storing existing log data if present (for JS pre-populating) -->
+        <input type="hidden" id="existing-log-data" value="{{ existing_log | tojson | safe if existing_log else '' }}">
+
+        <div class="glass-card p-4 p-md-5 position-relative">
+            <!-- Wizard Progress bar -->
+            <div class="wizard-progress">
+                <div class="wizard-progress-bar" id="wizard-progress-bar"></div>
+            </div>
+
+            <form id="wizard-form">
+                
+                <!-- Question 1: Study -->
+                <div class="wizard-step" data-step="1">
+                    <span class="badge bg-secondary mb-2 text-uppercase" style="font-size:10px; font-weight:600; padding:4px 8px;">Question 1 of 5</span>
+                    <h3 class="fw-bold mb-3">Did you study today?</h3>
+                    <p class="text-muted mb-4" style="font-size:14px;">Did you spend time reading books, completing courses, learning new tech stacks, or expanding your academic base?</p>
+                    
+                    <div class="option-btn-group">
+                        <button type="button" class="option-btn" data-q="q1" data-val="yes">
+                            <span>Yes</span>
+                        </button>
+                        <button type="button" class="option-btn" data-q="q1" data-val="no">
+                            <span>No</span>
+                        </button>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="form-label text-muted" style="font-size:12px; font-weight:600;">Optional Explanation / Reflection Notes</label>
+                        <textarea class="custom-textarea" rows="3" data-q="q1" placeholder="What did you study today? Any insights..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 2: Project Work -->
+                <div class="wizard-step" data-step="2">
+                    <span class="badge bg-secondary mb-2 text-uppercase" style="font-size:10px; font-weight:600; padding:4px 8px;">Question 2 of 5</span>
+                    <h3 class="fw-bold mb-3">Did you work on a project today?</h3>
+                    <p class="text-muted mb-4" style="font-size:14px;">Did you write code, design layout assets, architect databases, refactor styles, or make functional progress on a personal project?</p>
+                    
+                    <div class="option-btn-group">
+                        <button type="button" class="option-btn" data-q="q2" data-val="yes">
+                            <span>Yes</span>
+                        </button>
+                        <button type="button" class="option-btn" data-q="q2" data-val="no">
+                            <span>No</span>
+                        </button>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="form-label text-muted" style="font-size:12px; font-weight:600;">Optional Explanation / Reflection Notes</label>
+                        <textarea class="custom-textarea" rows="3" data-q="q2" placeholder="What project features did you build or plan?"></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 3: Exercise -->
+                <div class="wizard-step" data-step="3">
+                    <span class="badge bg-secondary mb-2 text-uppercase" style="font-size:10px; font-weight:600; padding:4px 8px;">Question 3 of 5</span>
+                    <h3 class="fw-bold mb-3">Did you exercise today?</h3>
+                    <p class="text-muted mb-4" style="font-size:14px;">Did you engage in physical activity like gym workouts, yoga, running, cycling, swimming, or brisk walking for at least 15-30 minutes?</p>
+                    
+                    <div class="option-btn-group">
+                        <button type="button" class="option-btn" data-q="q3" data-val="yes">
+                            <span>Yes</span>
+                        </button>
+                        <button type="button" class="option-btn" data-q="q3" data-val="no">
+                            <span>No</span>
+                        </button>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="form-label text-muted" style="font-size:12px; font-weight:600;">Optional Explanation / Reflection Notes</label>
+                        <textarea class="custom-textarea" rows="3" data-q="q3" placeholder="Describe your workout, duration, or physical activity..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 4: Career / Job Search -->
+                <div class="wizard-step" data-step="4">
+                    <span class="badge bg-secondary mb-2 text-uppercase" style="font-size:10px; font-weight:600; padding:4px 8px;">Question 4 of 5</span>
+                    <h3 class="fw-bold mb-3">Did you apply for a job or improve your career today?</h3>
+                    <p class="text-muted mb-4" style="font-size:14px;">Did you submit applications, update portfolio items, polish your resume/CV, practice system design/coding tests, or network on LinkedIn?</p>
+                    
+                    <div class="option-btn-group">
+                        <button type="button" class="option-btn" data-q="q4" data-val="yes">
+                            <span>Yes</span>
+                        </button>
+                        <button type="button" class="option-btn" data-q="q4" data-val="no">
+                            <span>No</span>
+                        </button>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="form-label text-muted" style="font-size:12px; font-weight:600;">Optional Explanation / Reflection Notes</label>
+                        <textarea class="custom-textarea" rows="3" data-q="q4" placeholder="Mention job search efforts, CV tweaks, or networking milestones..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Question 5: Social Media Avoidance -->
+                <div class="wizard-step" data-step="5">
+                    <span class="badge bg-secondary mb-2 text-uppercase" style="font-size:10px; font-weight:600; padding:4px 8px;">Question 5 of 5</span>
+                    <h3 class="fw-bold mb-3">Did you waste time on social media today?</h3>
+                    <p class="text-muted mb-4" style="font-size:14px;">Did you spend time scrolling YouTube shorts, Instagram reels, TikTok, or Twitter feeds instead of focusing on core goals?</p>
+                    
+                    <div class="option-btn-group">
+                        <button type="button" class="option-btn" data-q="q5" data-val="yes">
+                            <span>Yes</span>
+                        </button>
+                        <button type="button" class="option-btn" data-q="q5" data-val="no">
+                            <span>No</span>
+                        </button>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="form-label text-muted" style="font-size:12px; font-weight:600;">Optional Explanation / Reflection Notes</label>
+                        <textarea class="custom-textarea" rows="3" data-q="q5" placeholder="How did you control distractions today? Screen limits..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top" style="border-color: rgba(255,255,255,0.06) !important;">
+                    <button type="button" class="btn btn-outline-custom" id="btn-prev">Previous</button>
+                    <button type="button" class="btn btn-primary-custom" id="btn-next">Next Question</button>
+                    <button type="submit" class="btn btn-primary-custom" id="btn-submit" style="display: none;">Submit Daily Log</button>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<!-- Perfect Score Celebration Screen Overlay -->
+<div id="celebration-overlay">
+    <div class="celebration-content glass-card">
+        <div class="celebration-badge">🏆</div>
+        <h2 class="celebration-title">Stellar Day!</h2>
+        <p class="text-muted mb-4" style="font-size:14px;">You completed all 5 daily growth tasks. Your future self will thank you.</p>
+        
+        <div class="p-3 mb-4 rounded" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);">
+            <div class="d-flex justify-content-around">
+                <div>
+                    <span class="text-muted d-block" style="font-size:11px; text-transform:uppercase;">Date</span>
+                    <strong class="text-white" style="font-size:15px;">{{ today_str }}</strong>
+                </div>
+                <div style="border-left: 1px solid rgba(255,255,255,0.08);"></div>
+                <div>
+                    <span class="text-muted d-block" style="font-size:11px; text-transform:uppercase;">Completion</span>
+                    <strong class="text-emerald" style="font-size:15px; color:var(--color-completed);">5 / 5 Perfect</strong>
+                </div>
+            </div>
+        </div>
+
+        <p class="text-secondary mb-4" style="font-size:13px; font-style:italic;">"Consistency is not about perfection, but you nailed it today. Keep the fire burning."</p>
+
+        <button type="button" class="btn btn-primary-custom w-100 py-3" id="btn-celebration-continue">Continue to Dashboard</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/confetti.js') }}"></script>
+<script src="{{ url_for('static', filename='js/log.js') }}"></script>
+{% endblock %}
