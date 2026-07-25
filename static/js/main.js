@@ -38,4 +38,23 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 4000);
         }
     };
+
+    // 2. Live Date Updater
+    function updateDate() {
+        const dateElement = document.getElementById('live-date');
+        if (!dateElement) return;
+
+        const now = new Date();
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        
+        const dayName = days[now.getDay()];
+        const monthName = months[now.getMonth()];
+        const dateNum = now.getDate();
+        
+        dateElement.textContent = `${dateNum} ${monthName} ${dayName}`;
+    }
+    
+    updateDate();
+    setInterval(updateDate, 30000); // Check every 30 seconds for day changes
 });

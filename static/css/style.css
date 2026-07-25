@@ -164,6 +164,30 @@ body {
     color: var(--text-dark);
 }
 
+.sidebar-datetime {
+    margin: 4px 8px 10px 8px;
+    padding: 5px 4px;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--border-standard);
+    border-radius: 6px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: var(--transition-smooth);
+    overflow: hidden;
+    color: var(--secondary-accent);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+.sidebar-datetime:hover {
+    border-color: var(--border-glow);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.08);
+    color: var(--text-main);
+}
+
 /* Main Content Area */
 .main-content {
     margin-left: 130px;
@@ -235,27 +259,27 @@ body {
 /* Calendar Heatmap Grid */
 .calendar-grid {
     display: grid;
-    grid-template-columns: repeat(7, auto);
-    gap: 3px;
+    grid-template-columns: repeat(7, 24px);
+    gap: 6px;
     margin-top: 10px;
     max-width: fit-content;
 }
 
 .calendar-header-day {
     text-align: center;
-    font-size: 6px;
+    font-size: 8px;
     font-weight: 600;
     color: var(--text-dark);
     text-transform: uppercase;
-    width: 9px;
-    line-height: 9px;
+    width: 24px;
+    line-height: 20px;
     margin-bottom: 2px;
 }
 
 .calendar-day-cell {
-    width: 9px;
-    height: 9px;
-    border-radius: 1.5px;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
     cursor: pointer;
     border: 1px solid var(--border-standard);
     transition: var(--transition-smooth);
@@ -589,7 +613,7 @@ body {
         align-items: center;
         padding: 0;
     }
-    .sidebar-brand, .sidebar-footer {
+    .sidebar-brand, .sidebar-footer, .sidebar-datetime {
         display: none;
     }
     .sidebar-menu {
