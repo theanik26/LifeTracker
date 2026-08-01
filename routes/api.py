@@ -24,20 +24,27 @@ def get_log_details(date_str):
     except ValueError:
         return jsonify({'success': False, 'message': 'Invalid date format. Use YYYY-MM-DD'}), 400
         
+    # Fetch dynamic question labels
+    from models.question import QuestionConfig
+    questions = QuestionConfig.query.order_by(QuestionConfig.id).all()
+    q_map = {f'q{q.id}': q.short_title for q in questions}
+        
     log = DailyLog.query.filter_by(date=query_date).first()
     if not log:
         return jsonify({
             'success': True,
             'logged': False,
             'date': date_str,
-            'data': None
+            'data': None,
+            'question_labels': q_map
         })
         
     return jsonify({
         'success': True,
         'logged': True,
         'date': date_str,
-        'data': log.to_dict()
+        'data': log.to_dict(),
+        'question_labels': q_map
     })
 
 @api_bp.route('/api/submit-log', methods=['POST'])
@@ -274,3 +281,36 @@ def populate_dummy():
     except Exception as e:
         db.session.rollback()
         return jsonify({'success': False, 'message': f'Populating dummy data failed: {str(e)}'}), 500
+
+@api_bp.route('/api/questions', methods=['GET'])
+def get_questions():
+    from models.question import QuestionConfig
+    questions = QuestionConfig.query.order_by(QuestionConfig.id).all()
+    return jsonify({
+        'success': True,
+        'questions': [q.to_dict() for q in questions]
+    })
+
+@api_bp.route('/api/questions/update', methods=['POST'])
+def update_questions():
+    from models.question import QuestionConfig
+    data = request.get_json()
+    if not data or 'questions' not in data:
+        return jsonify({'success': False, 'message': 'Missing questions data.'}), 400
+        
+    try:
+        for item in data['questions']:
+            qid = int(item.get('id'))
+            q = QuestionConfig.query.get(qid)
+            if q:
+                q.question_text = item.get('question_text', '').strip()
+                q.description = item.get('description', '').strip()
+                q.short_title = item.get('short_title', '').strip()
+                q.placeholder = item.get('placeholder', '').strip()
+                q.is_inverted = bool(item.get('is_inverted', False))
+                
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Questions customized successfully!'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': f'Failed to update questions: {str(e)}'}), 500

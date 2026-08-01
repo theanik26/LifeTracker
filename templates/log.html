@@ -20,36 +20,20 @@
             
             <!-- Daily scorecard list -->
             <div class="d-flex flex-column gap-2 mb-3 mx-auto" style="max-width: 320px; text-align: left;">
+                {% for q in questions %}
                 <div class="p-2 rounded d-flex justify-content-between align-items-center" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);">
-                    <span class="text-secondary">Studied today</span>
-                    <span class="badge {% if existing_log.q1_val %}badge-completed{% else %}badge-missed{% endif %}" style="font-size: 9px; font-weight:600;">
-                        {% if existing_log.q1_val %}Yes{% else %}No{% endif %}
+                    <span class="text-secondary">{{ q.short_title }}</span>
+                    {% set val_key = 'q' ~ q.id ~ '_val' %}
+                    {% set ans_val = existing_log[val_key] %}
+                    <span class="badge {% if ans_val %}badge-completed{% else %}badge-missed{% endif %}" style="font-size: 9px; font-weight:600;">
+                        {% if q.is_inverted %}
+                            {% if ans_val %}No{% else %}Yes{% endif %}
+                        {% else %}
+                            {% if ans_val %}Yes{% else %}No{% endif %}
+                        {% endif %}
                     </span>
                 </div>
-                <div class="p-2 rounded d-flex justify-content-between align-items-center" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);">
-                    <span class="text-secondary">Worked on project</span>
-                    <span class="badge {% if existing_log.q2_val %}badge-completed{% else %}badge-missed{% endif %}" style="font-size: 9px; font-weight:600;">
-                        {% if existing_log.q2_val %}Yes{% else %}No{% endif %}
-                    </span>
-                </div>
-                <div class="p-2 rounded d-flex justify-content-between align-items-center" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);">
-                    <span class="text-secondary">Exercised</span>
-                    <span class="badge {% if existing_log.q3_val %}badge-completed{% else %}badge-missed{% endif %}" style="font-size: 9px; font-weight:600;">
-                        {% if existing_log.q3_val %}Yes{% else %}No{% endif %}
-                    </span>
-                </div>
-                <div class="p-2 rounded d-flex justify-content-between align-items-center" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);">
-                    <span class="text-secondary">Career / Job building</span>
-                    <span class="badge {% if existing_log.q4_val %}badge-completed{% else %}badge-missed{% endif %}" style="font-size: 9px; font-weight:600;">
-                        {% if existing_log.q4_val %}Yes{% else %}No{% endif %}
-                    </span>
-                </div>
-                <div class="p-2 rounded d-flex justify-content-between align-items-center" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);">
-                    <span class="text-secondary">Avoided social media</span>
-                    <span class="badge {% if existing_log.q5_val %}badge-completed{% else %}badge-missed{% endif %}" style="font-size: 9px; font-weight:600;">
-                        {% if existing_log.q5_val %}Yes{% else %}No{% endif %}
-                    </span>
-                </div>
+                {% endfor %}
             </div>
 
             <div class="mt-3">
@@ -68,110 +52,28 @@
 
             <form id="wizard-form">
                 
-                <!-- Question 1: Study -->
-                <div class="wizard-step" data-step="1">
-                    <span class="badge bg-secondary mb-2 text-uppercase" style="font-size:10px; font-weight:600; padding:4px 8px;">Question 1 of 5</span>
-                    <h3 class="fw-bold mb-3">Did you study today?</h3>
-                    <p class="text-muted mb-4" style="font-size:14px;">Did you spend time reading books, completing courses, learning new tech stacks, or expanding your academic base?</p>
+                {% for q in questions %}
+                <!-- Question {{ q.id }}: {{ q.short_title }} -->
+                <div class="wizard-step" data-step="{{ q.id }}">
+                    <span class="badge bg-secondary mb-2 text-uppercase" style="font-size:10px; font-weight:600; padding:4px 8px;">Question {{ q.id }} of 5</span>
+                    <h3 class="fw-bold mb-3">{{ q.question_text }}</h3>
+                    <p class="text-muted mb-4" style="font-size:14px;">{{ q.description }}</p>
                     
                     <div class="option-btn-group">
-                        <button type="button" class="option-btn" data-q="q1" data-val="yes">
+                        <button type="button" class="option-btn" data-q="q{{ q.id }}" data-val="yes" data-inverted="{{ 'true' if q.is_inverted else 'false' }}">
                             <span>Yes</span>
                         </button>
-                        <button type="button" class="option-btn" data-q="q1" data-val="no">
+                        <button type="button" class="option-btn" data-q="q{{ q.id }}" data-val="no" data-inverted="{{ 'true' if q.is_inverted else 'false' }}">
                             <span>No</span>
                         </button>
                     </div>
 
                     <div class="mt-4">
                         <label class="form-label text-muted" style="font-size:12px; font-weight:600;">Optional Explanation / Reflection Notes</label>
-                        <textarea class="custom-textarea" rows="3" data-q="q1" placeholder="What did you study today? Any insights..."></textarea>
+                        <textarea class="custom-textarea" rows="3" data-q="q{{ q.id }}" placeholder="{{ q.placeholder }}"></textarea>
                     </div>
                 </div>
-
-                <!-- Question 2: Project Work -->
-                <div class="wizard-step" data-step="2">
-                    <span class="badge bg-secondary mb-2 text-uppercase" style="font-size:10px; font-weight:600; padding:4px 8px;">Question 2 of 5</span>
-                    <h3 class="fw-bold mb-3">Did you work on a project today?</h3>
-                    <p class="text-muted mb-4" style="font-size:14px;">Did you write code, design layout assets, architect databases, refactor styles, or make functional progress on a personal project?</p>
-                    
-                    <div class="option-btn-group">
-                        <button type="button" class="option-btn" data-q="q2" data-val="yes">
-                            <span>Yes</span>
-                        </button>
-                        <button type="button" class="option-btn" data-q="q2" data-val="no">
-                            <span>No</span>
-                        </button>
-                    </div>
-
-                    <div class="mt-4">
-                        <label class="form-label text-muted" style="font-size:12px; font-weight:600;">Optional Explanation / Reflection Notes</label>
-                        <textarea class="custom-textarea" rows="3" data-q="q2" placeholder="What project features did you build or plan?"></textarea>
-                    </div>
-                </div>
-
-                <!-- Question 3: Exercise -->
-                <div class="wizard-step" data-step="3">
-                    <span class="badge bg-secondary mb-2 text-uppercase" style="font-size:10px; font-weight:600; padding:4px 8px;">Question 3 of 5</span>
-                    <h3 class="fw-bold mb-3">Did you exercise today?</h3>
-                    <p class="text-muted mb-4" style="font-size:14px;">Did you engage in physical activity like gym workouts, yoga, running, cycling, swimming, or brisk walking for at least 15-30 minutes?</p>
-                    
-                    <div class="option-btn-group">
-                        <button type="button" class="option-btn" data-q="q3" data-val="yes">
-                            <span>Yes</span>
-                        </button>
-                        <button type="button" class="option-btn" data-q="q3" data-val="no">
-                            <span>No</span>
-                        </button>
-                    </div>
-
-                    <div class="mt-4">
-                        <label class="form-label text-muted" style="font-size:12px; font-weight:600;">Optional Explanation / Reflection Notes</label>
-                        <textarea class="custom-textarea" rows="3" data-q="q3" placeholder="Describe your workout, duration, or physical activity..."></textarea>
-                    </div>
-                </div>
-
-                <!-- Question 4: Career / Job Search -->
-                <div class="wizard-step" data-step="4">
-                    <span class="badge bg-secondary mb-2 text-uppercase" style="font-size:10px; font-weight:600; padding:4px 8px;">Question 4 of 5</span>
-                    <h3 class="fw-bold mb-3">Did you apply for a job or improve your career today?</h3>
-                    <p class="text-muted mb-4" style="font-size:14px;">Did you submit applications, update portfolio items, polish your resume/CV, practice system design/coding tests, or network on LinkedIn?</p>
-                    
-                    <div class="option-btn-group">
-                        <button type="button" class="option-btn" data-q="q4" data-val="yes">
-                            <span>Yes</span>
-                        </button>
-                        <button type="button" class="option-btn" data-q="q4" data-val="no">
-                            <span>No</span>
-                        </button>
-                    </div>
-
-                    <div class="mt-4">
-                        <label class="form-label text-muted" style="font-size:12px; font-weight:600;">Optional Explanation / Reflection Notes</label>
-                        <textarea class="custom-textarea" rows="3" data-q="q4" placeholder="Mention job search efforts, CV tweaks, or networking milestones..."></textarea>
-                    </div>
-                </div>
-
-                <!-- Question 5: Social Media Avoidance -->
-                <div class="wizard-step" data-step="5">
-                    <span class="badge bg-secondary mb-2 text-uppercase" style="font-size:10px; font-weight:600; padding:4px 8px;">Question 5 of 5</span>
-                    <h3 class="fw-bold mb-3">Did you waste time on social media today?</h3>
-                    <p class="text-muted mb-4" style="font-size:14px;">Did you spend time scrolling YouTube shorts, Instagram reels, TikTok, or Twitter feeds instead of focusing on core goals?</p>
-                    
-                    <div class="option-btn-group">
-                        <button type="button" class="option-btn" data-q="q5" data-val="yes">
-                            <span>Yes</span>
-                        </button>
-                        <button type="button" class="option-btn" data-q="q5" data-val="no">
-                            <span>No</span>
-                        </button>
-                    </div>
-
-                    <div class="mt-4">
-                        <label class="form-label text-muted" style="font-size:12px; font-weight:600;">Optional Explanation / Reflection Notes</label>
-                        <textarea class="custom-textarea" rows="3" data-q="q5" placeholder="How did you control distractions today? Screen limits..."></textarea>
-                    </div>
-                </div>
+                {% endfor %}
 
                 <!-- Navigation Controls -->
                 <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top" style="border-color: rgba(255,255,255,0.06) !important;">

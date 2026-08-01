@@ -125,6 +125,15 @@ The dashboard calendar displays a rolling 30-day block. The grid is constructed 
    // Render empty grid cells to pad the offset
    ```
 3. Custom CSS classes apply varying color indicators: green (completed), yellow (partial), red (missed), and blue-gray (pending).
+4. **Grid Sizing & Overlap Mitigation**: In `static/css/style.css`, the columns are set explicitly to `repeat(7, 24px)` with a `6px` gap. Weekday headers ("Mon", "Tue") and cells are set to a width of `24px`. This prevents overlapping text wrapping bugs and makes the cells easy to click.
+
+### 3. Live Date Widget
+A dynamic system session calendar widget displays the current date:
+- **Location**: In the sidebar (`templates/base.html`) directly below the brand logo.
+- **Layout & Hover States**: Styled inside `static/css/style.css` under `.sidebar-datetime`. It utilizes glassmorphic styling, standardizing fonts at `9.5px` and centering them. On hover, the color transitions from cyan (`--secondary-accent`) to white (`--text-main`).
+- **Date Formatting**: Scripted in `static/js/main.js` inside `updateDate()`, producing a formatted string like `25 Jul Sat` using client-side JavaScript date APIs.
+- **Update Frequency**: Refreshes on page load and runs on a 30-second passive interval timer (`setInterval`) to ensure rollover updates if left open across days, while avoiding unnecessary ticking rendering cycles.
+- **Responsiveness**: Hidden on smaller viewport sizes (`max-width: 768px`) to keep bottom-nav controls uncluttered on mobile devices.
 
 ---
 

@@ -82,11 +82,15 @@ def get_dashboard_metrics():
     latest_notes = []
     for log in sorted(all_logs, key=lambda x: x.date, reverse=True):
         day_notes = []
-        if log.q1_note: day_notes.append(('Study', log.q1_note))
-        if log.q2_note: day_notes.append(('Project', log.q2_note))
-        if log.q3_note: day_notes.append(('Exercise', log.q3_note))
-        if log.q4_note: day_notes.append(('Career', log.q4_note))
-        if log.q5_note: day_notes.append(('Social Media', log.q5_note))
+        from models.question import QuestionConfig
+        questions = QuestionConfig.query.order_by(QuestionConfig.id).all()
+        q_map = {q.id: q.short_title for q in questions}
+        
+        if log.q1_note: day_notes.append((q_map.get(1, 'Study'), log.q1_note))
+        if log.q2_note: day_notes.append((q_map.get(2, 'Project'), log.q2_note))
+        if log.q3_note: day_notes.append((q_map.get(3, 'Exercise'), log.q3_note))
+        if log.q4_note: day_notes.append((q_map.get(4, 'Career'), log.q4_note))
+        if log.q5_note: day_notes.append((q_map.get(5, 'Social Media'), log.q5_note))
         
         for q_type, note in day_notes:
             if len(latest_notes) < 5:
@@ -184,11 +188,11 @@ def get_analytics_data():
         'trend_dates': trend_dates,
         'trend_scores': trend_scores,
         'task_percentages': {
-            'Study': q1_pct,
-            'Project': q2_pct,
-            'Exercise': q3_pct,
-            'Career': q4_pct,
-            'Social Media Avoidance': q5_pct
+            q_map.get(1, 'Study'): q1_pct,
+            q_map.get(2, 'Project'): q2_pct,
+            q_map.get(3, 'Exercise'): q3_pct,
+            q_map.get(4, 'Career'): q4_pct,
+            q_map.get(5, 'Social Media Avoidance'): q5_pct
         },
         'weekday_labels': weekday_names,
         'weekday_scores': weekday_averages,
@@ -246,6 +250,10 @@ def generate_monthly_report():
     worst_week_str = f"Week {worst_week_num} (Avg Score: {round(week_averages[worst_week_num], 2)}/5)" if worst_week_num else "N/A"
     
     # Task analysis for recommendations
+    from models.question import QuestionConfig
+    questions = QuestionConfig.query.order_by(QuestionConfig.id).all()
+    q_map = {q.id: q.short_title for q in questions}
+    
     q1_pct = (sum(1 for l in logs if l.q1_val) / total_logged) * 100
     q2_pct = (sum(1 for l in logs if l.q2_val) / total_logged) * 100
     q3_pct = (sum(1 for l in logs if l.q3_val) / total_logged) * 100
@@ -256,15 +264,18 @@ def generate_monthly_report():
     
     # Heuristics
     if q1_pct < 60:
-        recommendations.append("Your Study rate is slightly low. Try parsing complex topics into 15-minute micro-sessions right after breakfast.")
+        recommendations.append(f"Your progress rate for '{q_map.get(1, 'Study')}' is slightly low ({round(q1_pct, 1)}%). Try dedicating just 15 minutes to it right after breakfast.")
     if q2_pct < 60:
-        recommendations.append("Project work can be hard to start. Commit to the '2-minute rule': open your editor and write just 1 line of code daily.")
+        recommendations.append(f"Consistency for '{q_map.get(2, 'Project')}' is below target ({round(q2_pct, 1)}%). Commit to the '2-minute rule': start with just one small task daily.")
     if q3_pct < 60:
-        recommendations.append("Exercise consistency is below target. Remember that even a 10-minute brisk walk counts as a win!")
+        recommendations.append(f"Your execution for '{q_map.get(3, 'Exercise')}' is trailing ({round(q3_pct, 1)}%). Remember that even a 10-minute session counts as a daily win!")
     if q4_pct < 60:
-        recommendations.append("Career progress rate is trailing. Set a calendar reminder every Tuesday and Thursday to read tech articles or search jobs.")
+        recommendations.append(f"Progress on '{q_map.get(4, 'Career')}' can be improved ({round(q4_pct, 1)}%). Try setting a recurring reminder to check in on progress twice a week.")
     if q5_pct < 60:
-        recommendations.append("Social media distractions are high. Try configuring app limits or charging your phone in another room during working hours.")
+        if questions and len(questions) >= 5 and questions[4].is_inverted:
+            recommendations.append(f"Distractions relating to '{q_map.get(5, 'Avoided social media')}' are high. Try configuring app limits or screen-free times.")
+        else:
+            recommendations.append(f"Performance for '{q_map.get(5, 'Avoided social media')}' is low ({round(q5_pct, 1)}%). Focus on removing friction and building focus blocks.")
         
     # Positive feedback
     if consistency_score >= 80:

@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
         calendarGrid.innerHTML = '';
         
         // Add Weekday Headers
-        const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        const weekdays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
         weekdays.forEach(day => {
             const dayHead = document.createElement('div');
             dayHead.className = 'calendar-header-day';
@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (data.logged) {
                         modalLogDetails.style.display = 'block';
                         modalNoLog.style.display = 'none';
-                        renderModalDetails(data.data);
+                        renderModalDetails(data.data, data.question_labels);
                     } else {
                         modalLogDetails.style.display = 'none';
                         modalNoLog.style.display = 'block';
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 4. Render checklist and notes in the modal
-    function renderModalDetails(logData) {
+    function renderModalDetails(logData, labels) {
         // Set Badge Score
         if (logData.completed) {
             modalScoreBadge.className = 'status-badge badge-completed';
@@ -121,13 +121,21 @@ document.addEventListener('DOMContentLoaded', function() {
             modalScoreBadge.innerText = 'Missed Day (0/5)';
         }
 
+        const qLabels = labels || {
+            q1: 'Studied today',
+            q2: 'Worked on a project',
+            q3: 'Exercised today',
+            q4: 'Applied for job / Career build',
+            q5: 'Avoided wasting time on social media'
+        };
+
         // Render checklist items
         const questions = [
-            { key: 'q1', text: 'Studied today', val: logData.q1_val, note: logData.q1_note },
-            { key: 'q2', text: 'Worked on a project', val: logData.q2_val, note: logData.q2_note },
-            { key: 'q3', text: 'Exercised today', val: logData.q3_val, note: logData.q3_note },
-            { key: 'q4', text: 'Applied for job / Career build', val: logData.q4_val, note: logData.q4_note },
-            { key: 'q5', text: 'Avoided wasting time on social media', val: logData.q5_val, note: logData.q5_note }
+            { key: 'q1', text: qLabels.q1, val: logData.q1_val, note: logData.q1_note },
+            { key: 'q2', text: qLabels.q2, val: logData.q2_val, note: logData.q2_note },
+            { key: 'q3', text: qLabels.q3, val: logData.q3_val, note: logData.q3_note },
+            { key: 'q4', text: qLabels.q4, val: logData.q4_val, note: logData.q4_note },
+            { key: 'q5', text: qLabels.q5, val: logData.q5_val, note: logData.q5_note }
         ];
 
         modalNotesContainer.innerHTML = '';

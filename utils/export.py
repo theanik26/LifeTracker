@@ -17,14 +17,18 @@ def export_csv(logs):
     output = io.StringIO()
     writer = csv.writer(output)
     
+    from models.question import QuestionConfig
+    questions = QuestionConfig.query.order_by(QuestionConfig.id).all()
+    q_map = {q.id: q.short_title for q in questions}
+    
     # Write header
     writer.writerow([
         'Date', 
-        'Study (Value)', 'Study (Note)', 
-        'Project (Value)', 'Project (Note)', 
-        'Exercise (Value)', 'Exercise (Note)', 
-        'Career (Value)', 'Career (Note)', 
-        'Social Media Avoidance (Value)', 'Social Media Avoidance (Note)', 
+        f"{q_map.get(1, 'Study')} (Value)", f"{q_map.get(1, 'Study')} (Note)", 
+        f"{q_map.get(2, 'Project')} (Value)", f"{q_map.get(2, 'Project')} (Note)", 
+        f"{q_map.get(3, 'Exercise')} (Value)", f"{q_map.get(3, 'Exercise')} (Note)", 
+        f"{q_map.get(4, 'Career')} (Value)", f"{q_map.get(4, 'Career')} (Note)", 
+        f"{q_map.get(5, 'Avoided Social Media')} (Value)", f"{q_map.get(5, 'Avoided Social Media')} (Note)", 
         'Score', 'Completed'
     ])
     
@@ -73,13 +77,17 @@ def export_excel(logs):
     )
     
     # Headers
+    from models.question import QuestionConfig
+    questions = QuestionConfig.query.order_by(QuestionConfig.id).all()
+    q_map = {q.id: q.short_title for q in questions}
+    
     headers = [
         'Date', 
-        'Study', 'Study Notes', 
-        'Project', 'Project Notes', 
-        'Exercise', 'Exercise Notes', 
-        'Career', 'Career Notes', 
-        'Social Media', 'Social Media Notes', 
+        q_map.get(1, 'Study'), f"{q_map.get(1, 'Study')} Notes", 
+        q_map.get(2, 'Project'), f"{q_map.get(2, 'Project')} Notes", 
+        q_map.get(3, 'Exercise'), f"{q_map.get(3, 'Exercise')} Notes", 
+        q_map.get(4, 'Career'), f"{q_map.get(4, 'Career')} Notes", 
+        q_map.get(5, 'Social Media'), f"{q_map.get(5, 'Social Media')} Notes", 
         'Score', 'Completed'
     ]
     
@@ -282,7 +290,20 @@ def export_pdf(logs, stats, report_data):
     # 3. Log History Table
     story.append(Paragraph("Recent Check-in Logs", h2_style))
     
-    log_headers = ['Date', 'Study', 'Project', 'Exercise', 'Career', 'Social Media', 'Score', 'Completed']
+    from models.question import QuestionConfig
+    questions = QuestionConfig.query.order_by(QuestionConfig.id).all()
+    q_map = {q.id: q.short_title for q in questions}
+    
+    log_headers = [
+        'Date', 
+        q_map.get(1, 'Study'), 
+        q_map.get(2, 'Project'), 
+        q_map.get(3, 'Exercise'), 
+        q_map.get(4, 'Career'), 
+        q_map.get(5, 'Social Media'), 
+        'Score', 
+        'Completed'
+    ]
     table_data = [[Paragraph(h, th_style) for h in log_headers]]
     
     # List latest 30 logs for readability in PDF (prevent excessive pages)

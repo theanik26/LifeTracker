@@ -41,8 +41,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const noBtn = document.querySelector(`.option-btn[data-q="q${i}"][data-val="no"]`);
                 const textarea = document.querySelector(`textarea[data-q="q${i}"]`);
                 
-                if (i === 5) {
-                    // For q5, val === true means they did NOT waste time, so 'no' button is selected (green)
+                const isInverted = yesBtn ? yesBtn.getAttribute('data-inverted') === 'true' : false;
+                if (isInverted) {
                     if (val === true && noBtn) noBtn.classList.add('selected-yes');
                     if (val === false && yesBtn) yesBtn.classList.add('selected-no');
                 } else {
@@ -91,11 +91,10 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', function() {
             const q = this.getAttribute('data-q');
             const valStr = this.getAttribute('data-val');
+            const isInverted = this.getAttribute('data-inverted') === 'true';
             
-            // For q5 ("Did you waste time..."), 'no' is positive (true)
-            // For standard questions (q1-q4), 'yes' is positive (true)
             let val;
-            if (q === 'q5') {
+            if (isInverted) {
                 val = (valStr === 'no');
             } else {
                 val = (valStr === 'yes');
@@ -107,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const yesBtn = document.querySelector(`.option-btn[data-q="${q}"][data-val="yes"]`);
             const noBtn = document.querySelector(`.option-btn[data-q="${q}"][data-val="no"]`);
 
-            if (q === 'q5') {
+            if (isInverted) {
                 if (valStr === 'no') {
                     noBtn.classList.add('selected-yes');
                     yesBtn.classList.remove('selected-no');

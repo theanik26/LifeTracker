@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, current_app
 from datetime import datetime, date
 from database.connection import db
 from models.log import DailyLog
@@ -25,9 +25,13 @@ def log_today():
         log_dict = existing_log.to_dict()
         already_completed_today = existing_log.completed
         
+    from models.question import QuestionConfig
+    questions = QuestionConfig.query.order_by(QuestionConfig.id).all()
+        
     return render_template(
         'log.html', 
         existing_log=log_dict, 
+        questions=questions,
         already_completed_today=already_completed_today,
         today_str=today.strftime('%A, %b %d, %Y'),
         page='log'
@@ -48,3 +52,8 @@ def settings():
     # Helper to pass current date for manual simulation testing
     today_str = date.today().strftime('%Y-%m-%d')
     return render_template('settings.html', today_str=today_str, page='settings')
+
+@main_bp.route('/service-worker.js')
+def service_worker():
+    # Serve service worker from the root domain to allow full scope interception
+    return current_app.send_static_file('js/service-worker.js')
